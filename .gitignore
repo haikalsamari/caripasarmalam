@@ -1,0 +1,48 @@
+# === Global Settings ===
+.DS_Store
+.env
+*.log
+*.pid
+
+# === Java / Spring Boot (Backend) ===
+/backend/target/
+/backend/.classpath
+/backend/.project
+/backend/.settings/
+/backend/*.iml
+/backend/.idea/
+backend/hs_err_pid*
+
+# Maven
+/backend/pom.xml.tag
+/backend/pom.xml.releaseBackup
+/backend/pom.xml.versionsBackup
+/backend/logs/
+**/dependency-reduced-pom.xml
+
+# === React / Node (Frontend) ===
+/frontend/node_modules/
+/frontend/.env
+/frontend/build/
+/frontend/dist/
+/frontend/.parcel-cache/
+/frontend/.next/
+frontend/yarn.lock
+frontend/npm-debug.log
+
+# === IDEs ===
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+
+# === Docker-related ===
+mysql-data/
+docker-data/

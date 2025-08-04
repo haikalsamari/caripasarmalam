@@ -1,0 +1,68 @@
+package com.wsomad.nightmarket.NightMarket.Location.controller;
+
+import com.wsomad.nightmarket.NightMarket.Location.dto.LocationDto;
+import com.wsomad.nightmarket.NightMarket.Location.service.LocationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/locations")
+public class LocationController {
+    @Autowired
+    private LocationService locationService;
+
+    @PostMapping()
+    public ResponseEntity<String> createLocation(@RequestBody LocationDto locationDto) {
+        locationService.createLocation(locationDto);
+        return new ResponseEntity<>("Successfully created a new location", HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{locationId}")
+    public ResponseEntity<LocationDto> getLocationById(@PathVariable Long locationId) {
+        LocationDto location = locationService.getLocationById(locationId);
+
+        if (location != null) {
+            return new ResponseEntity<>(location, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<LocationDto>> getLocationsByPagination(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<LocationDto> locations = locationService.getLocationsByPage(page, size);
+        return ResponseEntity.ok(locations);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<LocationDto>> getAllLocations() {
+        List<LocationDto> locationList = locationService.getAllLocations();
+
+        if (!locationList.isEmpty()) {
+            return new ResponseEntity<>(locationList, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping("/{locationId}")
+    public ResponseEntity<String> updateLocationById(@PathVariable Long locationId, @RequestBody LocationDto updatedLocation) {
+        boolean isUpdated = locationService.updateLocationById(locationId, updatedLocation);
+        if (isUpdated) {
+            return new ResponseEntity<>("Successfully updated location", HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping("/{locationId}")
+    public ResponseEntity<String> deleteLocationById(@PathVariable Long locationId) {
+        boolean isDeleted = locationService.deleteLocationById(locationId);
+        if (isDeleted) {
+            return new ResponseEntity<>("Successfully deleted location", HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
