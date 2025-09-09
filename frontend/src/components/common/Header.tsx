@@ -15,7 +15,7 @@ export default function Header() {
                 <p className="mt-3 lg:text-md text-gray-500">Search for the nearest night market to your location</p>
                 <div className="relative w-full max-w-full mt-6">
                     <input 
-                        className="w-full pl-12 pr-4 py-3 rounded-full border border-gray-300 
+                        className="w-full pl-12 bg-white pr-4 py-3 rounded-full border border-gray-300 
                                  text-gray-600 text-sm placeholder:text-gray-400
                                  focus:outline-none focus:ring-2 focus:border-transparent
                                  transition-all duration-300"
