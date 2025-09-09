@@ -11,6 +11,7 @@ public class LocationMapper {
         address.setLocationName(addressDto.getLocationName());
         address.setLocationDistrict(addressDto.getLocationDistrict());
         address.setLocationState(addressDto.getLocationState());
+        address.setOperationalDay(addressDto.getOperationalDay());
         address.setLocationCouncilName(addressDto.getLocationCouncilName());
         return address;
     }
@@ -20,18 +21,19 @@ public class LocationMapper {
         addressDto.setLocationName(address.getLocationName());
         addressDto.setLocationDistrict(address.getLocationDistrict());
         addressDto.setLocationState(address.getLocationState());
+        addressDto.setOperationalDay(address.getOperationalDay());
         addressDto.setLocationCouncilName(address.getLocationCouncilName());
         return addressDto;
     }
 
     public static Location mapToLocation(LocationDto locationDto, Location location) {
-        if (location.getLocationId() == null) {
-
-        } else {
-            if (!location.getLocationId().equals(locationDto.getLocationId())) {
-                throw new IllegalArgumentException("Mismatched location ID between DTO and entity.");
-            }
-        }
+//        if (location.getLocationId() == null) {
+//
+//        } else {
+//            if (!location.getLocationId().equals(locationDto.getLocationId())) {
+//                throw new IllegalArgumentException("Mismatched location ID between DTO and entity.");
+//            }
+//        }
         location.setLocationAddress(mapToAddress(locationDto.getLocationAddress()));
         return location;
     }
