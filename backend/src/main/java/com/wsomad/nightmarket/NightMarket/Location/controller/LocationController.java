@@ -3,7 +3,6 @@ package com.wsomad.nightmarket.NightMarket.Location.controller;
 import com.wsomad.nightmarket.NightMarket.Location.dto.LocationDto;
 import com.wsomad.nightmarket.NightMarket.Location.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/locations")
+@RequestMapping("/api/locations")
 public class LocationController {
     @Autowired
     private LocationService locationService;
@@ -33,19 +32,19 @@ public class LocationController {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<LocationDto>> getLocationsByPagination(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<LocationDto> locations = locationService.getLocationsByPage(page, size);
-        return ResponseEntity.ok(locations);
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<LocationDto>> getAllLocations() {
-        List<LocationDto> locationList = locationService.getAllLocations();
-
+    public ResponseEntity<List<LocationDto>> getAllLocations(@RequestParam(defaultValue = "10") int limit) {
+        List<LocationDto> locationList = locationService.getAllLocations(limit);
         if (!locationList.isEmpty()) {
             return new ResponseEntity<>(locationList, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/update-coordinates")
+    public ResponseEntity<String> updateMissingCoordinates() {
+        locationService.updateLocationGeoCoordinates();
+        return new ResponseEntity<>("Successfully update coordinates", HttpStatus.OK);
+//        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{locationId}")

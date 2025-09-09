@@ -1,9 +1,12 @@
 package com.wsomad.nightmarket.NightMarket.Location.service;
 
 import com.wsomad.nightmarket.NightMarket.Location.dto.LocationDto;
+import com.wsomad.nightmarket.NightMarket.Location.entity.Coordinates;
+import com.wsomad.nightmarket.NightMarket.Location.entity.CouncilList;
 import com.wsomad.nightmarket.NightMarket.Location.entity.Location;
 import com.wsomad.nightmarket.NightMarket.Location.mapper.LocationMapper;
 import com.wsomad.nightmarket.NightMarket.Location.repository.LocationRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -19,9 +23,20 @@ public class LocationServiceImplementation implements LocationService {
     @Autowired
     private LocationRepository locationRepository;
 
+    @Autowired
+    private GeoCodingService geoCodingService;
+
     @Override
     public void createLocation(LocationDto locationDto) {
         Location location = LocationMapper.mapToLocation(locationDto, new Location());
+
+        String council = CouncilList.councilList.get(locationDto.getLocationAddress().getLocationDistrict());
+        if (council == null) {
+            throw new IllegalArgumentException("Invalid district name: " + locationDto.getLocationAddress().getLocationDistrict());
+        }
+
+        location.getLocationAddress().setLocationCouncilName(council);
+
         locationRepository.save(location);
     }
 
@@ -37,23 +52,68 @@ public class LocationServiceImplementation implements LocationService {
     }
 
     @Override
-    public Page<LocationDto> getLocationsByPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Location> locationPage = locationRepository.findAll(pageable);
+    public List<LocationDto> getAllLocations(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Location> locationPage = locationRepository.findAll(pageable).getContent();
 
-        return locationPage.map(location ->
-                LocationMapper.mapToLocationDto(location, new LocationDto())
-        );
-    }
-
-    @Override
-    public List<LocationDto> getAllLocations() {
-        List<Location> locationList = locationRepository.findAll();
-
-        return locationList.stream()
+        return locationPage.stream()
                 .map(location -> LocationMapper.mapToLocationDto(location, new LocationDto()))
                 .toList();
     }
+
+//    @Override
+//    @Transactional
+//    public boolean updateLocationGeoCoordinates() {
+//        List<Location> locations = locationRepository.findAll();
+//        boolean updated = false;
+//
+//        for (Location location : locations) {
+//            if (location.getLocationAddress().getLatitude() == null || location.getLocationAddress().getLongitude() == null) {
+//                Coordinates coordinates = geoCodingService.getGeoCodeAddress(location.getLocationAddress());
+//                if (coordinates != null) {
+//                    location.getLocationAddress().setLatitude(coordinates.getLatitude());
+//                    location.getLocationAddress().setLongitude(coordinates.getLongitude());
+//                    locationRepository.save(location);
+//                    updated = true;
+//                    try {
+//                        Thread.sleep(1000); //
+//                    } catch (InterruptedException e) {
+//                        Thread.currentThread().interrupt();
+//                    }
+//                }
+//            }
+//        }
+//
+//        return updated;
+//    }
+
+    @Override
+    @Transactional
+    public boolean updateLocationGeoCoordinates() {
+        List<Location> locations = locationRepository.findAll();
+        boolean updated = false;
+
+        for (Location location : locations) {
+            Coordinates coordinates = geoCodingService.getGeoCodeAddress(location.getLocationAddress());
+            if (coordinates != null) {
+                location.getLocationAddress().setLatitude(coordinates.getLatitude());
+                location.getLocationAddress().setLongitude(coordinates.getLongitude());
+                location.getLocationAddress().setDisplayName(coordinates.getDisplayName());
+                locationRepository.save(location);
+                updated = true;
+
+                try {
+                    Thread.sleep(1000); // respect API rate limit
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        return updated;
+    }
+
+
 
     @Override
     public boolean updateLocationById(Long locationId, LocationDto updatedLocation) {

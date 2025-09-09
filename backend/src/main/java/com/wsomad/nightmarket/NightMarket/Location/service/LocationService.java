@@ -10,8 +10,8 @@ import java.util.List;
 public interface LocationService {
     void createLocation(LocationDto locationDto);
     LocationDto getLocationById(Long locationId);
-    Page<LocationDto> getLocationsByPage(int page, int size);
-    List<LocationDto> getAllLocations();
+    List<LocationDto> getAllLocations(int limit);
+    boolean updateLocationGeoCoordinates();
     boolean updateLocationById(Long locationId, LocationDto updatedLocation);
     boolean deleteLocationById(Long locationId);
 }
