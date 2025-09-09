@@ -1,15 +1,16 @@
-import Header from "@/components/common/Header";
-import LocationCardLayout from "@/features/location/components/card/LocationCardLayout";
+import MapView from "@/features/location/components/map/MapView";
+import useGeoLocation from "@/features/location/hooks/useGeoLocation";
 
 export default function HomeLayout() {
+    const location = useGeoLocation();
+
+    if (!location) {
+        return <div>Loading location...</div>;
+    }
+
     return (
-        <>
-            <div className="min-h-screen px-5 md:px-10 lg:px-15">
-                <div className='py-6 max-w-5xl lg:max-w-6xl mx-auto'>
-                    <Header></Header>
-                    <LocationCardLayout></LocationCardLayout>
-                </div>
-            </div>
-        </>
+        <div className="min-h-screen">
+            <MapView userLocation={location} />
+        </div>
     )
 }
