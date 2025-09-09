@@ -13,6 +13,8 @@ public class LocationMapper {
         address.setLocationState(addressDto.getLocationState());
         address.setOperationalDay(addressDto.getOperationalDay());
         address.setLocationCouncilName(addressDto.getLocationCouncilName());
+        address.setLatitude(addressDto.getLatitude());
+        address.setLongitude(addressDto.getLongitude());
         return address;
     }
 
@@ -23,6 +25,8 @@ public class LocationMapper {
         addressDto.setLocationState(address.getLocationState());
         addressDto.setOperationalDay(address.getOperationalDay());
         addressDto.setLocationCouncilName(address.getLocationCouncilName());
+        addressDto.setLatitude(address.getLatitude());
+        addressDto.setLongitude(address.getLongitude());
         return addressDto;
     }
 
