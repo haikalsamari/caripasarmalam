@@ -15,6 +15,7 @@ public class LocationMapper {
         address.setLocationCouncilName(addressDto.getLocationCouncilName());
         address.setLatitude(addressDto.getLatitude());
         address.setLongitude(addressDto.getLongitude());
+        address.setDisplayName(addressDto.getDisplayName());
         return address;
     }
 
@@ -27,17 +28,11 @@ public class LocationMapper {
         addressDto.setLocationCouncilName(address.getLocationCouncilName());
         addressDto.setLatitude(address.getLatitude());
         addressDto.setLongitude(address.getLongitude());
+        addressDto.setDisplayName(address.getDisplayName());
         return addressDto;
     }
 
     public static Location mapToLocation(LocationDto locationDto, Location location) {
-//        if (location.getLocationId() == null) {
-//
-//        } else {
-//            if (!location.getLocationId().equals(locationDto.getLocationId())) {
-//                throw new IllegalArgumentException("Mismatched location ID between DTO and entity.");
-//            }
-//        }
         location.setLocationAddress(mapToAddress(locationDto.getLocationAddress()));
         return location;
     }

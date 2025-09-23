@@ -18,7 +18,7 @@ public class LocationController {
     @PostMapping()
     public ResponseEntity<String> createLocation(@RequestBody LocationDto locationDto) {
         locationService.createLocation(locationDto);
-        return new ResponseEntity<>("Successfully created a new location", HttpStatus.CREATED);
+        return new ResponseEntity<>("Successfully create new location", HttpStatus.CREATED);
     }
 
     @GetMapping("/{locationId}")
@@ -32,10 +32,20 @@ public class LocationController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<LocationDto>> getAllLocations(@RequestParam(defaultValue = "10") int limit) {
+    public ResponseEntity<List<LocationDto>> getAllLocations(@RequestParam(defaultValue = "5") int limit) {
         List<LocationDto> locationList = locationService.getAllLocations(limit);
         if (!locationList.isEmpty()) {
             return new ResponseEntity<>(locationList, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<LocationDto>> findLocationsByName(@RequestParam String locationName) {
+        List<LocationDto> locations = locationService.findLocationsByName(locationName);
+
+        if (!locations.isEmpty()) {
+            return new ResponseEntity<>(locations, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -44,7 +54,6 @@ public class LocationController {
     public ResponseEntity<String> updateMissingCoordinates() {
         locationService.updateLocationGeoCoordinates();
         return new ResponseEntity<>("Successfully update coordinates", HttpStatus.OK);
-//        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{locationId}")

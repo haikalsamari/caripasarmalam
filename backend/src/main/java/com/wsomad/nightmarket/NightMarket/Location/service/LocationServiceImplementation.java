@@ -9,12 +9,10 @@ import com.wsomad.nightmarket.NightMarket.Location.repository.LocationRepository
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -32,7 +30,7 @@ public class LocationServiceImplementation implements LocationService {
 
         String council = CouncilList.councilList.get(locationDto.getLocationAddress().getLocationDistrict());
         if (council == null) {
-            throw new IllegalArgumentException("Invalid district name: " + locationDto.getLocationAddress().getLocationDistrict());
+            throw new IllegalArgumentException("Invalid location name: " + locationDto.getLocationAddress().getLocationDistrict());
         }
 
         location.getLocationAddress().setLocationCouncilName(council);
@@ -61,37 +59,19 @@ public class LocationServiceImplementation implements LocationService {
                 .toList();
     }
 
-//    @Override
-//    @Transactional
-//    public boolean updateLocationGeoCoordinates() {
-//        List<Location> locations = locationRepository.findAll();
-//        boolean updated = false;
-//
-//        for (Location location : locations) {
-//            if (location.getLocationAddress().getLatitude() == null || location.getLocationAddress().getLongitude() == null) {
-//                Coordinates coordinates = geoCodingService.getGeoCodeAddress(location.getLocationAddress());
-//                if (coordinates != null) {
-//                    location.getLocationAddress().setLatitude(coordinates.getLatitude());
-//                    location.getLocationAddress().setLongitude(coordinates.getLongitude());
-//                    locationRepository.save(location);
-//                    updated = true;
-//                    try {
-//                        Thread.sleep(1000); //
-//                    } catch (InterruptedException e) {
-//                        Thread.currentThread().interrupt();
-//                    }
-//                }
-//            }
-//        }
-//
-//        return updated;
-//    }
+    @Override
+    public List<LocationDto> findLocationsByName(String locationName) {
+        List<Location> locations = locationRepository.findByLocationAddress_LocationNameContainingIgnoreCase(locationName);
+
+        return locations.stream()
+                .map(location -> LocationMapper.mapToLocationDto(location, new LocationDto()))
+                .toList();
+    }
 
     @Override
     @Transactional
-    public boolean updateLocationGeoCoordinates() {
+    public void updateLocationGeoCoordinates() {
         List<Location> locations = locationRepository.findAll();
-        boolean updated = false;
 
         for (Location location : locations) {
             Coordinates coordinates = geoCodingService.getGeoCodeAddress(location.getLocationAddress());
@@ -100,7 +80,6 @@ public class LocationServiceImplementation implements LocationService {
                 location.getLocationAddress().setLongitude(coordinates.getLongitude());
                 location.getLocationAddress().setDisplayName(coordinates.getDisplayName());
                 locationRepository.save(location);
-                updated = true;
 
                 try {
                     Thread.sleep(1000); // respect API rate limit
@@ -109,11 +88,7 @@ public class LocationServiceImplementation implements LocationService {
                 }
             }
         }
-
-        return updated;
     }
-
-
 
     @Override
     public boolean updateLocationById(Long locationId, LocationDto updatedLocation) {
