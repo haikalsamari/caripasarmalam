@@ -1,8 +1,8 @@
 import MapView from "@/features/location/components/map/MapView";
-import useGeoLocation from "@/features/location/hooks/useGeoLocation";
+import useUserGeoLocation from "@/features/location/hooks/useUserGeoLocation";
 
 export default function HomeLayout() {
-    const location = useGeoLocation();
+    const location = useUserGeoLocation();
 
     if (!location) {
         return <div>Loading location...</div>;

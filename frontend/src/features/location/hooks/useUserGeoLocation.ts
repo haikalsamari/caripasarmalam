@@ -5,7 +5,7 @@ type Coordinates = {
     longitude: number;
 }
 
-export default function useGeoLocation() {
+export default function useUserGeoLocation() {
     const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
 
     useEffect(() => {
